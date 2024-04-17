@@ -1,0 +1,6 @@
+docker run --rm --mount type=bind,source="$(pwd)",target=/opt/tyk-sync/tmp \
+ tykio/tyk-sync:v1.4 \
+ dump \
+ -d="http://host.docker.internal:3000" \
+ -s="4b4d3b130f8c47776a0c3bccadebb38f" \
+ -t="./tmp"

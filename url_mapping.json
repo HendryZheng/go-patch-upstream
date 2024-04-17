@@ -1,0 +1,17 @@
+[
+    {
+        "dev": "http://upstream-dev.com",
+        "staging": "http://upstream-staging.com",
+        "production": "http://upstream-production.com"
+    },
+    {
+        "dev": "http://aa-upstream-dev.com",
+        "staging": "http://aa-upstream-staging.com",
+        "production": "http://aa-upstream-production.com"
+    },
+    {
+        "dev": "http://bb-upstream-dev.com",
+        "staging": "http://bb-upstream-staging.com",
+        "production": "http://bb-upstream-production.com"
+    }
+]
