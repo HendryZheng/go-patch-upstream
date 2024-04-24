@@ -65,51 +65,22 @@ func main() {
 			continue
 		}
 
-		// Unmarshal JSON content into a map
-		var data map[string]interface{}
-		if err := json.Unmarshal(content, &data); err != nil {
-			fmt.Println("Error unmarshaling JSON:", err)
-			continue
-		}
+		// Convert content to string
+		contentStr := string(content)
 
-		// Get the target URL from the JSON data
-		targetURL, ok := getTargetURL(data)
-		if !ok {
-			fmt.Println("Key 'api_definition.proxy.target_url' not found in", file)
-			continue
-		}
-
-		// Check if the targetURL is a string
-		url, ok := targetURL.(string)
-		if !ok {
-			fmt.Println("Target URL is not a string in", file)
-			continue
-		}
-
-		// Replace the URL with the value from the URL mapping
+		// Iterate over each mapping
 		for _, mapping := range urlMapping {
-			if val, found := mapping[from]; found && val == url {
-				url = val
-				if newVal, found := mapping[to]; found {
-					url = newVal
-				}
-				break
+			// Check if the "from" value matches the current mapping
+			if val, found := mapping[from]; found {
+				// Replace the target string in the content
+				contentStr = strings.ReplaceAll(contentStr, val, mapping[to])
 			}
 		}
 
-		// Update the target URL in the JSON data
-		data["api_definition"].(map[string]interface{})["proxy"].(map[string]interface{})["target_url"] = url
-
-		// Marshal the updated data back to JSON format
-		updatedContent, err := json.MarshalIndent(data, "", "    ")
-		if err != nil {
-			fmt.Println("Error marshaling JSON:", err)
-			continue
-		}
-
 		// Write the updated content back to the file
-		if err := os.WriteFile(file, updatedContent, 0644); err != nil {
-			fmt.Println("Error writing to file:", err)
+		err = os.WriteFile(file, []byte(contentStr), 0644)
+		if err != nil {
+			fmt.Println("Error:", err)
 			continue
 		}
 
@@ -132,15 +103,4 @@ func loadURLMapping(filename string) ([]map[string]string, error) {
 	}
 
 	return mappings, nil
-}
-
-// getTargetURL finds and returns the target URL from the JSON data
-func getTargetURL(data map[string]interface{}) (interface{}, bool) {
-	proxy, ok := data["api_definition"].(map[string]interface{})["proxy"].(map[string]interface{})
-	if !ok {
-		return nil, false
-	}
-
-	targetURL, ok := proxy["target_url"]
-	return targetURL, ok
 }
